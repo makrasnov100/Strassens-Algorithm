@@ -1,6 +1,6 @@
 //Strassen Algorithm Implementation
 //CS473 Final Project
-//Authors: Kostiantyn Makrasnov & Timothy Buggerman
+//Authors: Kostiantyn Makrasnov & Timothy Bruggeman
 //Main program driver - contains the majority of operations
 
 #include <iostream>     //cout, cin, endl
