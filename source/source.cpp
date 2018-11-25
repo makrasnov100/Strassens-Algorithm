@@ -94,10 +94,18 @@ int main()
     int lastMenuChoice = enterMenu();
     while(lastMenuChoice != 3)
     {
+        //Find Matrix Dimensions
         int r1, c1, r2, c2;
         findBounds(r1, c1, r2, c2);
 
+        //Find the Largest Dimension
+        int max1 = max(r1, c1);
+        int max2 = max(r2, c2);
+        int maxFinal = max(max1, max2);
 
+        //Setup initial matrix values
+        Matrix matrix1(r1, c1);
+        Matrix matrix2(r2, c2);
 
         if(c1 != r2)
         {
@@ -109,9 +117,19 @@ int main()
         if(lastMenuChoice == 1)
         {   
             cout << "Generating random [" << r1 << "X" << c1 << "] and [" << r2 << "X" << c2 << "] matricies!" << endl;
+
+            matrix1.generateNewRandomMatrix();
+            matrix2.generateNewRandomMatrix();
+
         }
         else
         {
+            cout << "Reading a [" << r1 << "X" << c1 << "] and [" << r2 << "X" << c2 << "] matrix!" << endl;
+
+            matrix1.generateNewRandomMatrix();
+            matrix2.generateNewRandomMatrix();
+            matrix 
+
         }
 
         lastMenuChoice = enterMenu();
