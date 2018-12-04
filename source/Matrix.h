@@ -4,8 +4,12 @@
 //Matrix class header file - used to store and complete simple matrix operations
 
 #include <iostream> //cout, cin
+#include <string>
 #include <time.h>
 #include <random>
+#include <math.h>
+
+using namespace std;
 
 class Matrix
 {
@@ -14,7 +18,7 @@ public:
     int rows;
     int columns;
     int maxNeededDim;
-
+    int groupMax;
 
     //Constructors
     Matrix(int rows, int columns, int groupMax);
@@ -23,15 +27,16 @@ public:
     ~Matrix();
 
     //Generators
-    void generateNewRandomMatrix();
+    void generateRandomMatrix();
     void readNewMatrix();
     void createEmptyMatrix();
     
     //Utility
     int findSmallestPowTwo(int init);
-    void printMatrix();
+    void printMatrix(string title);
+    bool checkConditions(const Matrix& other, Matrix& result);
 
     //Multiplication Functionality
-    Matrix strassenMult(const Matrix& other);
-    Matrix bruteForceMult(const Matrix& other);
-}
+    void strassenMult(const Matrix& other, Matrix& result);
+    void bruteForceMult(const Matrix& other, Matrix& result);
+};

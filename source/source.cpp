@@ -7,6 +7,7 @@
 #include <ctype.h>      //isdigit
 #include <string>       //string
 #include <limits>       //numeric_limits
+#include "Matrix.h"
 
 using namespace std;
 
@@ -85,6 +86,7 @@ void findBounds(int& r1, int& c1, int& r2, int& c2)
                           "Invalid Input! Enter a value from 4 to 256: ", 4, 256);
     c2 = getNumberInRange("Please enter the amount of COLUMNS in the SECOND matrix (4 to 256): ", 
                           "Invalid Input! Enter a value from 4 to 256: ", 4, 256);
+    cout << endl;
 }
 
 
@@ -104,8 +106,8 @@ int main()
         int maxFinal = max(max1, max2);
 
         //Setup initial matrix values
-        Matrix matrix1(r1, c1);
-        Matrix matrix2(r2, c2);
+        Matrix matrix1(r1, c1, maxFinal);
+        Matrix matrix2(r2, c2, maxFinal);
 
         if(c1 != r2)
         {
@@ -113,24 +115,37 @@ int main()
             lastMenuChoice = enterMenu();
             continue;
         }
-
         if(lastMenuChoice == 1)
         {   
             cout << "Generating random [" << r1 << "X" << c1 << "] and [" << r2 << "X" << c2 << "] matricies!" << endl;
-
-            matrix1.generateNewRandomMatrix();
-            matrix2.generateNewRandomMatrix();
-
+            
+            //Generate Random Matricies
+            matrix1.generateRandomMatrix();   
+            matrix1.printMatrix("Matrix 1:");
+            matrix2.generateRandomMatrix();
+            matrix2.printMatrix("Matrix 2:");
         }
         else
         {
             cout << "Reading a [" << r1 << "X" << c1 << "] and [" << r2 << "X" << c2 << "] matrix!" << endl;
-
-            matrix1.generateNewRandomMatrix();
-            matrix2.generateNewRandomMatrix();
-            matrix 
-
+            matrix1.readNewMatrix();
+            matrix1.printMatrix("Matrix 1:");
+            matrix2.readNewMatrix();
+            matrix2.printMatrix("Matrix 2:");
         }
+
+        //Apply Highschool 
+        Matrix bfMult(matrix1.rows, matrix2.columns, maxFinal);
+        bfMult.createEmptyMatrix();
+        matrix1.bruteForceMult(matrix2, bfMult);
+
+        //Apply Strassen
+        Matrix strassenMult(matrix1.rows, matrix2.columns, maxFinal);
+        strassenMult.createEmptyMatrix(); /// MAY WANT TO USE DIFFERENT METHOD
+        matrix1.strassenMult(matrix2, strassenMult);
+
+        bfMult.printMatrix("Multiplied Highscool Matrix: ");
+        strassenMult.printMatrix("Multiplied Strassen Matrix: ");
 
         lastMenuChoice = enterMenu();
     }
