@@ -144,7 +144,7 @@ int main()
         strassenMult.createEmptyMatrix(); /// MAY WANT TO USE DIFFERENT METHOD
         matrix1.strassenMult(matrix2, strassenMult);
 
-        bfMult.printMatrix("Multiplied Highscool Matrix: ");
+        bfMult.printMatrix("Multiplied Highschool Matrix: ");
         strassenMult.printMatrix("Multiplied Strassen Matrix: ");
 
         lastMenuChoice = enterMenu();

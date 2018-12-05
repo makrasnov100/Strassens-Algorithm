@@ -19,6 +19,24 @@ Matrix::Matrix(int rows, int columns, int groupMax)
 }
 
 
+Matrix::Matrix(int startRowIdx, int startColumnIdx, int rows, int columns, int groupMax, double ** rawOther)
+{
+    this->rows = rows;
+    this->columns = columns;
+    this->groupMax = groupMax;
+    this->maxNeededDim = findSmallestPowTwo(groupMax);
+    srand (time(NULL));
+    
+    //Allocating memory
+    createEmptyMatrix();
+
+    //Copy array values
+    for(int r = startRowIdx; r < startRowIdx + rows; r++)
+        for(int c = startColumnIdx; c < startColumnIdx + columns; c++)
+            rawMatrix[r][c] = rawOther[r][c];
+
+}
+
 //Deconstructors
 Matrix::~Matrix()
 {
@@ -26,7 +44,6 @@ Matrix::~Matrix()
         delete rawMatrix[i];
     delete rawMatrix;
 }
-
 
 //Generators
 void Matrix::generateRandomMatrix()
@@ -46,9 +63,20 @@ void Matrix::generateRandomMatrix()
             if(r < rows && c < columns)
                 rawMatrix[r][c] = unif(re);
             else
-                rawMatrix[r][c] = 0;
+                rawMatrix[r][c] = 0.0;
         }
     }
+
+    //Uncomment to see that the matrix was padded wwith zeros
+    /*cout << "Padded Matrix " << maxNeededDim << endl; 
+    for(int a = 0; a < maxNeededDim; a++)
+    {
+        for(int b = 0; b < maxNeededDim; b++)
+            cout << rawMatrix[a][b] << ", ";
+        
+        cout << endl;
+    }*/
+    
 }
 void Matrix::readNewMatrix()
 {
@@ -78,11 +106,58 @@ void Matrix::createEmptyMatrix()
 {
     //Allocating Memory
     rawMatrix = new double *[maxNeededDim];
-    for(int i = 0; i < rows; i++)
+    for(int i = 0; i < maxNeededDim; i++)
         rawMatrix[i] = new double[maxNeededDim];
 }
 
 //Utility
+bool Matrix::AddToCurrent(const Matrix other, Matrix& result)
+{
+    if(rows != other.rows || other.rows != result.rows)
+    {
+        cout << "Cannot add matricies of different dimensions!" << endl;
+        return false;
+    }
+    
+    if(columns != other.columns || other.columns != result.columns)
+    {
+        cout << "Cannot add matricies of different dimensions!" << endl;
+        return false;
+    }
+
+    for(int r = 0; r < rows; r++)
+    {
+        for(int c = 0; c < columns; c++)
+        {
+            result.rawMatrix[r][c] = rawMatrix[r][c] + other.rawMatrix[r][c];
+        }
+    }
+}
+
+bool Matrix::SubtractFromCurrent(const Matrix other, Matrix& result)
+{
+    if(rows != other.rows || other.rows != result.rows)
+    {
+        cout << "Cannot add subtract of different dimensions!" << endl;
+        return false;
+    }
+    
+    if(columns != other.columns || other.columns != result.columns)
+    {
+        cout << "Cannot subtract matricies of different dimensions!" << endl;
+        return false;
+    }
+
+    for(int r = 0; r < rows; r++)
+    {
+        for(int c = 0; c < columns; c++)
+        {
+            result.rawMatrix[r][c] = rawMatrix[r][c] - other.rawMatrix[r][c];
+        }
+    }
+}
+
+
 int Matrix::findSmallestPowTwo(int init)
 {
     if(ceil(log2(init)) == floor(log2(init)))
@@ -116,7 +191,7 @@ void Matrix::printMatrix(string title)
     cout << endl;
 }
 
-bool Matrix::checkConditions(const Matrix& other, Matrix& result)
+bool Matrix::checkMultConditions(const Matrix& other, Matrix& result)
 {
     //Cancel (return false) if any of the matricies have issues
 
@@ -144,7 +219,7 @@ bool Matrix::checkConditions(const Matrix& other, Matrix& result)
 //Multipliers
 void Matrix::strassenMult(const Matrix& other, Matrix& result)
 {
-    checkConditions(other, result);
+    checkMultConditions(other, result);
 
     //APPLY STATIC STRASSEN FUNCTION HERE OR PASTE YOUR CLASS FUNCTIONS INTO THE MATRIX CLASS
 
@@ -152,7 +227,7 @@ void Matrix::strassenMult(const Matrix& other, Matrix& result)
 
 void Matrix::bruteForceMult(const Matrix& other, Matrix& result)
 {
-    checkConditions(other, result);
+    checkMultConditions(other, result);
 
     for(int r = 0; r < result.rows; r++)
     {   

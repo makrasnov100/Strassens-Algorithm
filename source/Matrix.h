@@ -22,6 +22,7 @@ public:
 
     //Constructors
     Matrix(int rows, int columns, int groupMax);
+    Matrix(int startRowIdx, int StartColumnIdx, int rows, int columns, int groupMax, double ** rawOther);
 
     //Deconstructors
     ~Matrix();
@@ -34,7 +35,11 @@ public:
     //Utility
     int findSmallestPowTwo(int init);
     void printMatrix(string title);
-    bool checkConditions(const Matrix& other, Matrix& result);
+    bool checkMultConditions(const Matrix& other, Matrix& result);
+    bool AddToCurrent(const Matrix other, Matrix& result);
+    bool SubtractFromCurrent(const Matrix other, Matrix& result);
+
+
 
     //Multiplication Functionality
     void strassenMult(const Matrix& other, Matrix& result);
