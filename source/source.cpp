@@ -134,6 +134,17 @@ int main()
             matrix2.printMatrix("Matrix 2:");
         }
 
+        //Tests
+        Matrix portionMatrix(0, 0, 2, 2, matrix1.rawMatrix);
+        portionMatrix.printMatrix("Portion Matrix:");
+        Matrix portionMatrix2(1, 1, 2, 2, matrix1.rawMatrix);
+        portionMatrix2.printMatrix("Portion2 Matrix:");
+        portionMatrix.AddToCurrent(portionMatrix2);
+        portionMatrix.printMatrix("Added Matrix:");
+        portionMatrix2.printMatrix("Portion2 Matrix:");
+        portionMatrix.SubtractFromCurrent(portionMatrix2);
+        portionMatrix.printMatrix("Subtracted Matrix:");
+
         //Apply Highschool 
         Matrix bfMult(matrix1.rows, matrix2.columns, maxFinal);
         bfMult.createEmptyMatrix();
@@ -143,6 +154,7 @@ int main()
         Matrix strassenMult(matrix1.rows, matrix2.columns, maxFinal);
         strassenMult.createEmptyMatrix(); /// MAY WANT TO USE DIFFERENT METHOD
         matrix1.strassenMult(matrix2, strassenMult);
+
 
         bfMult.printMatrix("Multiplied Highschool Matrix: ");
         strassenMult.printMatrix("Multiplied Strassen Matrix: ");

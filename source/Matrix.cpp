@@ -19,11 +19,11 @@ Matrix::Matrix(int rows, int columns, int groupMax)
 }
 
 
-Matrix::Matrix(int startRowIdx, int startColumnIdx, int rows, int columns, int groupMax, double ** rawOther)
+Matrix::Matrix(int startRowIdx, int startColumnIdx, int rows, int columns, vector<vector<double>> rawOther)
 {
     this->rows = rows;
     this->columns = columns;
-    this->groupMax = groupMax;
+    this->groupMax = rows; // technically should be fine for our use but could make more robust
     this->maxNeededDim = findSmallestPowTwo(groupMax);
     srand (time(NULL));
     
@@ -31,18 +31,18 @@ Matrix::Matrix(int startRowIdx, int startColumnIdx, int rows, int columns, int g
     createEmptyMatrix();
 
     //Copy array values
-    for(int r = startRowIdx; r < startRowIdx + rows; r++)
-        for(int c = startColumnIdx; c < startColumnIdx + columns; c++)
-            rawMatrix[r][c] = rawOther[r][c];
+    //cout << "Rows from " << startRowIdx << " to " << (startRowIdx + rows) << endl;
+    //cout << "Columns drom " << startColumnIdx << " to " << (startColumnIdx + columns) << endl;
+    for(int r = startRowIdx; r < (startRowIdx + rows); r++)
+    {
+        for(int c = startColumnIdx; c < (startColumnIdx + columns); c++)
+        {
+            //cout << "r:" << r-startRowIdx << " c:" << c-startColumnIdx << endl;
+            rawMatrix[r-startRowIdx][c-startColumnIdx] = rawOther[r][c];
+        }
+    }
 
-}
-
-//Deconstructors
-Matrix::~Matrix()
-{
-    for(int i = rows - 1; i <= 0; i--)
-        delete rawMatrix[i];
-    delete rawMatrix;
+    printMatrix("Matrix After Copying!");
 }
 
 //Generators
@@ -57,15 +57,9 @@ void Matrix::generateRandomMatrix()
 
     //Assigning values
     for(int r = 0; r < maxNeededDim; r++)
-    {
         for(int c = 0; c < maxNeededDim; c++)
-        {
             if(r < rows && c < columns)
                 rawMatrix[r][c] = unif(re);
-            else
-                rawMatrix[r][c] = 0.0;
-        }
-    }
 
     //Uncomment to see that the matrix was padded wwith zeros
     /*cout << "Padded Matrix " << maxNeededDim << endl; 
@@ -105,56 +99,42 @@ void Matrix::readNewMatrix()
 void Matrix::createEmptyMatrix()
 {
     //Allocating Memory
-    rawMatrix = new double *[maxNeededDim];
+    rawMatrix.resize(maxNeededDim);
     for(int i = 0; i < maxNeededDim; i++)
-        rawMatrix[i] = new double[maxNeededDim];
+    {
+        rawMatrix[i].resize(maxNeededDim);
+        for(int x = 0; x < maxNeededDim; x++)
+        {
+            rawMatrix[i].push_back(0);
+        }
+    }
 }
 
 //Utility
-bool Matrix::AddToCurrent(const Matrix other, Matrix& result)
+bool Matrix::AddToCurrent(const Matrix other)
 {
-    if(rows != other.rows || other.rows != result.rows)
-    {
-        cout << "Cannot add matricies of different dimensions!" << endl;
-        return false;
-    }
-    
-    if(columns != other.columns || other.columns != result.columns)
+    if(rows != other.rows || columns != other.columns)
     {
         cout << "Cannot add matricies of different dimensions!" << endl;
         return false;
     }
 
     for(int r = 0; r < rows; r++)
-    {
         for(int c = 0; c < columns; c++)
-        {
-            result.rawMatrix[r][c] = rawMatrix[r][c] + other.rawMatrix[r][c];
-        }
-    }
+            rawMatrix[r][c] += other.rawMatrix[r][c];
 }
 
-bool Matrix::SubtractFromCurrent(const Matrix other, Matrix& result)
+bool Matrix::SubtractFromCurrent(const Matrix other)
 {
-    if(rows != other.rows || other.rows != result.rows)
+    if(rows != other.rows || columns != other.columns)
     {
         cout << "Cannot add subtract of different dimensions!" << endl;
         return false;
     }
-    
-    if(columns != other.columns || other.columns != result.columns)
-    {
-        cout << "Cannot subtract matricies of different dimensions!" << endl;
-        return false;
-    }
 
     for(int r = 0; r < rows; r++)
-    {
         for(int c = 0; c < columns; c++)
-        {
-            result.rawMatrix[r][c] = rawMatrix[r][c] - other.rawMatrix[r][c];
-        }
-    }
+            rawMatrix[r][c] -= other.rawMatrix[r][c];
 }
 
 
@@ -174,7 +154,7 @@ void Matrix::printMatrix(string title)
 {
     cout << title << endl;
 
-    if(rawMatrix == NULL)
+    if(rawMatrix.empty())
     {
         cout << "Cannot print empty matrix!" << endl;
         return;
@@ -194,8 +174,7 @@ void Matrix::printMatrix(string title)
 bool Matrix::checkMultConditions(const Matrix& other, Matrix& result)
 {
     //Cancel (return false) if any of the matricies have issues
-
-    if(rawMatrix == NULL || other.rawMatrix == NULL || result.rawMatrix == NULL)
+    if(rawMatrix.empty() || other.rawMatrix.empty() || result.rawMatrix.empty())
     {
         cout << "One of the two matricies is empty, unable to multiply!" << endl;
         return false;
@@ -236,18 +215,13 @@ void Matrix::bruteForceMult(const Matrix& other, Matrix& result)
             double sum = 0;
             for(int m = 0; m < rows; m++)
             {
-                cout << "bruteForceMult 4 - sum: " << sum << endl;
                 sum += rawMatrix[r][m] * other.rawMatrix[m][c]; 
             }
-            
-            cout << "Result for ROW: " << r << " COLOUMN: " << c << " - "<< sum << endl;
 
             result.rawMatrix[r][c] = sum;
         }
         cout << endl;
     }
-
-    result.printMatrix("REsult before pass back:");
 
     return;
 }
