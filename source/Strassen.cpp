@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <time.h>
 #include "Matrix.h"
 
 using namespace std;
@@ -188,6 +189,7 @@ void printMatrix(vector< vector<int> > matrix, int n) {
 
 int strassenLanding(Matrix first, Matrix second, Matrix result, int dim) { // Other file will reference this function
 
+
 	int n = 8;
 
 	vector<int> inner(n);
@@ -204,7 +206,13 @@ int strassenLanding(Matrix first, Matrix second, Matrix result, int dim) { // Ot
 		}
 	}
 
+	clock_t t; t = clock();
+
 	strassen(A, B, C, n);
+	t = clock() - t;
+
+	cout << "this multiplication took " << t << " time to complete.";
+
 	printMatrix(C, n);
 	return 0;
 }
