@@ -190,7 +190,7 @@ void printMatrix(vector< vector<int> > matrix, int n) {
 int strassenLanding(Matrix first, Matrix second, Matrix result, int dim) { // Other file will reference this function
 
 
-	int n = 8;
+	int n = dim;
 
 	vector<int> inner(n);
 	vector< vector<int> > A(n, inner), B(n, inner), C(n, inner);
@@ -211,7 +211,7 @@ int strassenLanding(Matrix first, Matrix second, Matrix result, int dim) { // Ot
 	strassen(A, B, C, n);
 	t = clock() - t;
 
-	cout << "this multiplication took " << t << " time to complete.";
+	cout << "Strassen Multiplication took " << t << " time to complete." << endl;
 
 	printMatrix(C, n);
 	return 0;

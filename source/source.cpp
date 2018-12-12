@@ -98,7 +98,6 @@ void findBounds(int& r1, int& c1, int& r2, int& c2)
 		"Invalid Input! Enter a value from 4 to 256: ", 4, 256);*/
 }
 
-
 ///[MAIN]
 int main()
 {

@@ -6,6 +6,7 @@
 //1) https://stackoverflow.com/questions/2704521/generate-random-double-numbers-in-c (random double value generation)
 
 #include "Matrix.h"
+#include <time.h>
 
 int strassenLanding(Matrix A, Matrix B, Matrix C, int dim);
 
@@ -210,7 +211,11 @@ void Matrix::strassenMult(const Matrix& other, Matrix& result)
 
 void Matrix::bruteForceMult(const Matrix& other, Matrix& result)
 {
+
+
 	checkMultConditions(other, result);
+
+	clock_t t; t = clock();
 
 	for (int r = 0; r < result.rows; r++)
 	{
@@ -226,6 +231,9 @@ void Matrix::bruteForceMult(const Matrix& other, Matrix& result)
 		}
 		cout << endl;
 	}
+
+	t = clock() - t;
+	cout << "Brute force takes " << t << " amount of time." << endl;
 
 	return;
 }
