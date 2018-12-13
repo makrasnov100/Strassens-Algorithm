@@ -2,12 +2,17 @@
 //CS473 Final Project
 //Authors: Kostiantyn Makrasnov & Timothy Bruggeman
 //Main program driver - contains the majority of operations
+//References:
+//1) https://www.geeksforgeeks.org/measure-execution-time-function-cpp/ (timing technique)
 
 #include <iostream>     //cout, cin, endl
 #include <ctype.h>      //isdigit
+#include <random>
+#include <time.h>
 #include <string>       //string
 #include <limits>       //numeric_limits
-#include "Matrix.h"
+#include <chrono>		//used for timing the function runtime
+#include "StrassenAlg.h"
 
 using namespace std;
 
@@ -98,9 +103,12 @@ void findBounds(int& r1, int& c1, int& r2, int& c2)
 		"Invalid Input! Enter a value from 4 to 256: ", 4, 256);*/
 }
 
+
 ///[MAIN]
 int main()
 {
+	srand(time(NULL));
+
 	int lastMenuChoice = enterMenu();
 	while (lastMenuChoice != 3)
 	{
@@ -128,10 +136,10 @@ int main()
 			cout << "Generating random [" << r1 << "X" << c1 << "] and [" << r2 << "X" << c2 << "] matricies!" << endl;
 
 			//Generate Random Matricies
-			matrix1.generateRandomMatrix();
-			matrix1.printMatrix("Matrix 1:");
-			matrix2.generateRandomMatrix();
-			matrix2.printMatrix("Matrix 2:");
+			matrix1.generateRandomMatrix(rand());
+			//matrix1.printMatrix("Matrix 1:");
+			matrix2.generateRandomMatrix(rand());
+			//matrix2.printMatrix("Matrix 2:");
 		}
 		else
 		{
@@ -156,16 +164,30 @@ int main()
 		//Apply Highschool 
 		Matrix bfMult(matrix1.rows, matrix2.columns, maxFinal);
 		bfMult.createEmptyMatrix();
+
+		using namespace std::chrono;
+
+		auto startHS = high_resolution_clock::now();
 		matrix1.bruteForceMult(matrix2, bfMult);
+		auto stopHS = high_resolution_clock::now();
 
 		//Apply Strassen
 		Matrix strassenMult(matrix1.rows, matrix2.columns, maxFinal);
-		strassenMult.createEmptyMatrix(); /// MAY WANT TO USE DIFFERENT METHOD
-		matrix1.strassenMult(matrix2, strassenMult);
+		strassenMult.createEmptyMatrix();
+
+		auto startStrassen = high_resolution_clock::now();
+		StrassenAlg::strassenLanding(matrix1, matrix2, strassenMult);
+		auto stopStrassen = high_resolution_clock::now();
 
 
-		bfMult.printMatrix("Results of Highschool Multiplication: ");
+		//Print Results
+		auto durationHS = duration_cast<microseconds>(stopHS - startHS); 
+		auto durationStrassen = duration_cast<microseconds>(stopStrassen - startStrassen);
+		cout << "Highschool Multiplication took - " << durationHS.count() << " micro sec" << endl;
+		cout << "Strassen Multiplication took - " << durationStrassen.count() << " micro sec" << endl;
+		//bfMult.printMatrix("Results of Highschool Multiplication: ");
 		//strassenMult.printMatrix("Multiplied Strassen Matrix: ");
+		cout << endl;
 
 		lastMenuChoice = enterMenu();
 	}
