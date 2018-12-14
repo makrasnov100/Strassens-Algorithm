@@ -105,6 +105,7 @@ void findBounds(int& r1, int& c1, int& r2, int& c2)
 
 
 ///[MAIN]
+//Main Driver for the program allows 
 int main()
 {
 	srand(time(NULL));
@@ -116,7 +117,7 @@ int main()
 		int r1, c1, r2, c2;
 		findBounds(r1, c1, r2, c2);
 
-		//Find the Largest Dimension
+		//Find the Largest Dimension (left here for future development)
 		int max1 = max(r1, c1);
 		int max2 = max(r2, c2);
 		int maxFinal = max(max1, max2);
@@ -125,28 +126,27 @@ int main()
 		Matrix matrix1(r1, c1, maxFinal);
 		Matrix matrix2(r2, c2, maxFinal);
 
-		/*if (c1 != r2)
-		{
-			cout << "Cannot multiply [" << r1 << "X" << c1 << "] by [" << r2 << "X" << c2 << "]!" << endl << endl;
-			lastMenuChoice = enterMenu();
-			continue;
-		}*/
 		if (lastMenuChoice == 1)
 		{
 			cout << "Generating random [" << r1 << "X" << c1 << "] and [" << r2 << "X" << c2 << "] matricies!" << endl;
 
 			//Generate Random Matricies
 			matrix1.generateRandomMatrix(rand());
-			//matrix1.printMatrix("Matrix 1:");
 			matrix2.generateRandomMatrix(rand());
-			//matrix2.printMatrix("Matrix 2:");
+
+			//Print Random Matrices (if small enough)
+			if(maxFinal <= 16)
+			{
+				matrix1.printMatrix("Matrix 1:");
+				matrix2.printMatrix("Matrix 2:");
+			}
 		}
 		else
 		{
 			cout << "Reading a [" << r1 << "X" << c1 << "] and [" << r2 << "X" << c2 << "] matrix!" << endl;
-			matrix1.readNewMatrix();
+			matrix1.readNewMatrix("A");
+			matrix2.readNewMatrix("B");
 			matrix1.printMatrix("Matrix 1:");
-			matrix2.readNewMatrix();
 			matrix2.printMatrix("Matrix 2:");
 		}
 
@@ -179,14 +179,18 @@ int main()
 		StrassenAlg::strassenLanding(matrix1, matrix2, strassenMult);
 		auto stopStrassen = high_resolution_clock::now();
 
-
-		//Print Results
-		auto durationHS = duration_cast<microseconds>(stopHS - startHS); 
-		auto durationStrassen = duration_cast<microseconds>(stopStrassen - startStrassen);
-		cout << "Highschool Multiplication took - " << durationHS.count() << " micro sec" << endl;
-		cout << "Strassen Multiplication took - " << durationStrassen.count() << " micro sec" << endl;
-		//bfMult.printMatrix("Results of Highschool Multiplication: ");
-		//strassenMult.printMatrix("Multiplied Strassen Matrix: ");
+		//Print Final Results
+		// - Multiplication Results (if size less than 16)
+		if(maxFinal <= 16)
+		{
+			bfMult.printMatrix("Results of Highschool Multiplication: ");
+			strassenMult.printMatrix("Multiplied Strassen Matrix: ");
+		}
+		// - Timing Results
+		auto durationHS = duration_cast<milliseconds>(stopHS - startHS); 
+		auto durationStrassen = duration_cast<milliseconds>(stopStrassen - startStrassen);
+		cout << "Highschool Multiplication took - " << durationHS.count() << " milli sec" << endl;
+		cout << "Strassen Multiplication took - " << durationStrassen.count() << " milli sec" << endl;
 		cout << endl;
 
 		lastMenuChoice = enterMenu();
