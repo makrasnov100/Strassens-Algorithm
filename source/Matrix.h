@@ -36,7 +36,7 @@ public:
 
 	//Generators
 	void generateRandomMatrix(int seed);
-	void readNewMatrix(string matrixName);
+	void readNewMatrix();
 	void createEmptyMatrix();
 
 	//Utility

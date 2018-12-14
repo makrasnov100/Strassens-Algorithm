@@ -8,8 +8,9 @@
 
 #include "Matrix.h"
 
-//[CONSTRUCTORS]
-//Minimal Constructors
+int strassenLanding(Matrix A, Matrix B, Matrix C, int dim);
+
+//Constructors
 Matrix::Matrix(int rows, int columns, int groupMax)
 {
 	this->rows = rows;
@@ -17,7 +18,7 @@ Matrix::Matrix(int rows, int columns, int groupMax)
 	this->groupMax = groupMax;
 	this->maxNeededDim = findSmallestPowTwo(groupMax);
 }
-//Partition Constructor
+
 Matrix::Matrix(int startRowIdx, int startColumnIdx, int rows, int columns, vector<vector<double>> rawOther)
 {
 	this->rows = rows;
@@ -25,18 +26,23 @@ Matrix::Matrix(int startRowIdx, int startColumnIdx, int rows, int columns, vecto
 	this->groupMax = rows; // technically should be fine for our use but could make more robust
 	this->maxNeededDim = findSmallestPowTwo(groupMax);
 
-	//Allocate memory
+	//Allocating memory
 	createEmptyMatrix();
 
 	//Copy array values
 	//cout << "Rows from " << startRowIdx << " to " << (startRowIdx + rows) << endl;
 	//cout << "Columns drom " << startColumnIdx << " to " << (startColumnIdx + columns) << endl;
 	for (int r = startRowIdx; r < (startRowIdx + rows); r++)
+	{
 		for (int c = startColumnIdx; c < (startColumnIdx + columns); c++)
+		{
+			//cout << "r:" << r-startRowIdx << " c:" << c-startColumnIdx << endl;
 			rawMatrix[r - startRowIdx][c - startColumnIdx] = rawOther[r][c];
+		}
+	}
 }
 
-//Copy Constructor (FIX ME: might be uneeded)
+//Copy Constructor
 Matrix::Matrix(const Matrix &other)
 {
 	//Copy meta data from other matrix
@@ -45,7 +51,7 @@ Matrix::Matrix(const Matrix &other)
 	this->groupMax = other.groupMax;
 	this->maxNeededDim = other.maxNeededDim;
 
-	//Allocate memory
+	//Allocating memory
 	createEmptyMatrix();
 
 	//Copy raw values from one matrix to another
@@ -54,17 +60,16 @@ Matrix::Matrix(const Matrix &other)
 			rawMatrix[r][c] = other.rawMatrix[r][c];
 }
 
-//[OPERATOR OVERLOADS]
-//- Addition
+//Operator overloads definition
 Matrix operator+(const Matrix& a, const Matrix& b)
 {
 	if (a.rows != b.rows || a.columns != b.columns)
 	{
 		cout << "Cannot add matricies of different dimensions!" << endl;
-		return a;
+		return a; //FIX ME: return a 0 matrix instead
 	}
 
-	Matrix result(a.rows, a.columns, a.rows);
+	Matrix result(a.rows, a.columns, a.rows); // FIX ME: should be thesame size but could take max still
 	result.createEmptyMatrix();
 
 	for (int r = 0; r < a.rows; r++)
@@ -73,16 +78,16 @@ Matrix operator+(const Matrix& a, const Matrix& b)
 
 	return result;
 }
-//- Subtraction
+
 Matrix operator-(const Matrix& a, const Matrix& b)
 {
 	if (a.rows != b.rows || a.columns != b.columns)
 	{
 		cout << "Cannot subtract matricies of different dimensions!" << endl;
-		return a;
+		return a; //FIX ME: return a 0 matrix instead
 	}
 
-	Matrix result(a.rows, a.columns, a.rows);
+	Matrix result(a.rows, a.columns, a.rows); // FIX ME: should be thesame size but could take max still
 	result.createEmptyMatrix();
 
 	for (int r = 0; r < a.rows; r++)
@@ -91,23 +96,25 @@ Matrix operator-(const Matrix& a, const Matrix& b)
 	
 	return result;
 }
-//- Multiplication (size 1 matrices only)
+
 Matrix operator*(const Matrix& a, const Matrix& b)
 {
-	if (a.rows != 1 || b.rows != 1 || a.columns != 1 || b.columns != 1)
+	if (a.rows != 1 || b.rows != 1 || a.columns != 1 || b.columns != 1) //FIX ME: most likely can use only one comparison
 	{
 		cout << "Matrix multplication supported only for size 1 with * operator!" << endl;
-		return a;
+		return a; //FIX ME: return a 0 matrix instead
 	}
 
-	Matrix result(1, 1, 1);
+	Matrix result(1, 1, 1); // FIX ME: should be thesame size but could take max still
 	result.createEmptyMatrix();
 
 	result.rawMatrix[0][0] = a.rawMatrix[0][0] * b.rawMatrix[0][0];
 
 	return result;
 }
-// - Assignment (2)
+
+
+//Assignment overloading (2)
 Matrix& Matrix::operator=(const Matrix& other)
 {
 	this->rows = other.rows;
@@ -125,8 +132,7 @@ Matrix& Matrix::operator=(const Matrix& other)
 	return *this;
 }
 
-///[GENERATORS]
-// Allows to create matrices with random values -100 to 100
+//Generators
 void Matrix::generateRandomMatrix(int seed)
 {
 	//Seting up random parameters (1)
@@ -151,9 +157,9 @@ void Matrix::generateRandomMatrix(int seed)
 
 		cout << endl;
 	}*/
+
 }
-// Allows user to enter their own values for a matrix
-void Matrix::readNewMatrix(string matrixName)
+void Matrix::readNewMatrix()
 {
 	//Allocating memory
 	createEmptyMatrix();
@@ -165,7 +171,7 @@ void Matrix::readNewMatrix(string matrixName)
 		{
 			if (r < rows && c < columns)
 			{
-				cout << "Enter value for " << matrixName << " (" << r << "," << c << "): ";
+				cout << "Enter value for (" << r << "," << c << "): ";
 				string curInput;
 				getline(cin, curInput);
 				rawMatrix[r][c] = stod(curInput);
@@ -177,23 +183,25 @@ void Matrix::readNewMatrix(string matrixName)
 		}
 	}
 }
-// Initializes all raw matrix values to zero
 void Matrix::createEmptyMatrix()
 {
 	//Allocating Memory
+	//cout << "Creating Empty Matrix 1 - " << maxNeededDim << endl;
 	rawMatrix.resize(maxNeededDim);
+	//cout << "Creating Empty Matrix 2" << endl;
 	for (int i = 0; i < maxNeededDim; i++)
 	{
+		//cout << "Creating Empty Matrix 3" << endl;
 		rawMatrix[i].resize(maxNeededDim);
 		for (int x = 0; x < maxNeededDim; x++)
 		{
 			rawMatrix[i].push_back(0);
 		}
 	}
+	//cout << "Creating Empty Matrix 4" << endl;
 }
 
-//[UTILITY]
-//Copies the entirety of one matrix into another at given position 
+//Utility
 void Matrix::copyIntoMatrix(int startRow, int startColumn, Matrix other)
 {
 	//check for space avalibility
@@ -208,7 +216,7 @@ void Matrix::copyIntoMatrix(int startRow, int startColumn, Matrix other)
 		for (int c = 0; c < other.rawMatrix[0].size(); c++)
 			rawMatrix[r + startRow][c + startColumn] = other.rawMatrix[r][c];
 }
-//Returns smallest power of two or the given number if already a power of two
+
 int Matrix::findSmallestPowTwo(int init)
 {
 	if (ceil(log2(init)) == floor(log2(init)))
@@ -220,7 +228,7 @@ int Matrix::findSmallestPowTwo(int init)
 		return pow(2, lowExp);
 	}
 }
-//Prints matrix contents (no limits to the size printled - handled elsewhere)
+
 void Matrix::printMatrix(string title)
 {
 	cout << title << endl;
@@ -241,7 +249,7 @@ void Matrix::printMatrix(string title)
 
 	cout << endl;
 }
-//Checks if matrices can be multiplied (left for future feature)
+
 bool Matrix::checkMultConditions(const Matrix& other, Matrix& result)
 {
 	//Cancel (return false) if any of the matricies have issues
@@ -266,8 +274,7 @@ bool Matrix::checkMultConditions(const Matrix& other, Matrix& result)
 	return true;
 }
 
-//[MULTIPLIERS]
-//Default ("Highschool")
+//Multipliers
 void Matrix::bruteForceMult(const Matrix& other, Matrix& result)
 {
 	checkMultConditions(other, result);
